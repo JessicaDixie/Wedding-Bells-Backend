@@ -1,10 +1,11 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
+app.use(cors());
 const path = require("path");
 
 const app = express();
-const PORT = 5000; // Local port
+const PORT = process.env.PORT || 5000; 
 
 // Middleware
 app.use(cors()); // Allows frontend requests from localhost
@@ -99,5 +100,5 @@ app.post("/api/songs", (req, res) => {
   res.json({ message: "Song suggestion saved successfully!" });
 });
 
-// Start local server
-app.listen(PORT, () => console.log(`Local server running on http://localhost:${PORT}`));
+// Start  server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
