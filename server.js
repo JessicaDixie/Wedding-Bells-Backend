@@ -2,8 +2,13 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const path = require("path");
-const app = express();
+const mongoose = require("mongoose");
+const MONGO_URI = process.env.MONGO_URI || "your-local-mongo-uri";
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
+const app = express();
 // Middleware
 app.use(cors()); // Allows frontend requests from localhost
 app.use(express.json());
@@ -12,76 +17,61 @@ app.get("/", (req, res) => {
   res.send("Render backend is working!");
 });
 
+// RSVP Schema
+const rsvpSchema = new mongoose.Schema({
+  name: String,
+  attending: String,
+  plusOne: String
+});
+const RSVP = mongoose.model("RSVP", rsvpSchema);
+
+// Song Schema
+const songSchema = new mongoose.Schema({
+  song: String,
+  artist: String
+});
+const Song = mongoose.model("Song", songSchema);
+
+
 // File paths
 const rsvpFile = 'rsvps.json';
 const songsFile = 'songs.json';
 
 // --- RSVP Endpoint ---
 
-app.post("/api/rsvp", (req, res) => {
+app.post("/api/rsvp", async (req, res) => {
   const { name, attending, plusOne } = req.body;
-
   if (!name || !attending || !plusOne) {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  const newRsvp = { name, attending, plusOne };
-
-  let rsvps = [];
-  if (fs.existsSync(rsvpFile)) {
-    const fileContent = fs.readFileSync(rsvpFile, "utf8");
-    if (fileContent.trim() !== "") {
-      try {
-        rsvps = JSON.parse(fileContent);
-        if (!Array.isArray(rsvps)) rsvps = [rsvps];
-      } catch (err) {
-        console.error("Error parsing JSON", err);
-        rsvps = [];
-      }
-    }
+  try {
+    const newRsvp = new RSVP({ name, attending, plusOne });
+    await newRsvp.save();
+    res.json({ message: "RSVP saved successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error saving RSVP" });
   }
-
-  // Add the new entry
-  rsvps.push(newRsvp);
-  // Write back to file (creates it if missing)
-  fs.writeFileSync(rsvpFile, JSON.stringify(rsvps, null, 2), "utf8");
-
-  console.log("New RSVP added:", newRsvp);
-  res.json({ message: "RSVP saved successfully!" });
 });
 
 // --- Song Suggestion Endpoint ---
-app.post("/api/songs", (req, res) => {
+app.post("/api/songs", async (req, res) => {
   const { song, artist } = req.body;
-
   if (!song || !artist) {
     return res.status(400).json({ message: "Song and artist are required." });
   }
 
-  const newSong = { song, artist };
-
-  let songs = [];
-  if (fs.existsSync(songsFile)) {
-    const fileContent = fs.readFileSync(songsFile, "utf8");
-    if (fileContent.trim() !== "") {
-      try {
-        songs = JSON.parse(fileContent);
-        if (!Array.isArray(songs)) songs = [songs];
-      } catch (err) {
-        console.error("Error parsing JSON", err);
-        songs = [];
-      }
-    }
+  try {
+    const newSong = new Song({ song, artist });
+    await newSong.save();
+    res.json({ message: "Song suggestion saved successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error saving song suggestion" });
   }
-
-  // Add the new entry
-  songs.push(newSong);
-  // Write back to file (creates it if missing)
-  fs.writeFileSync(songsFile, JSON.stringify(songs, null, 2), "utf8");
-
-  console.log("New song added:", newSong);
-  res.json({ message: "Song suggestion saved successfully!" });
 });
+
 
 
 // Start  server

@@ -7,12 +7,11 @@
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jessica Dixie",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0"
-  },
-  "author": "Jessica Dixie",
-  "license": "MIT"
+    "express": "^5.1.0",
+    "mongoose": "^8.19.3"
+  }
 }
