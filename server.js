@@ -1,69 +1,103 @@
-const express = require('express');
-const fs = require('fs');
-const cors = require('cors');
-const path = require('path');
+const express = require("express");
+const fs = require("fs");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 5000; // Local port
 
 // Middleware
-app.use(cors());
+app.use(cors()); // Allows frontend requests from localhost
 app.use(express.json());
 
-//Check that the server is running in the browser
-app.get('/', (req, res) => {
-  res.send('Wedding Bells Backend is running successfully!');
-});
+// File paths
+const rsvpFile = 'rsvps.json';
+const songsFile = 'songs.json';
 
 // --- RSVP Endpoint ---
-app.post('/api/rsvp', (req, res) => {
+
+app.post("/api/rsvp", (req, res) => {
   const { name, attending, plusOne } = req.body;
 
   if (!name || !attending || !plusOne) {
-    return res.status(400).json({ message: 'All fields are required.' });
+    return res.status(400).json({ message: "All fields are required." });
   }
 
-  const newRSVP = { name, attending, plusOne };
-
-  const rsvpFile = path.join(__dirname, 'rsvps.json');
-  let rsvps = [];
+  const newRsvp = { name, attending, plusOne };
 
   if (fs.existsSync(rsvpFile)) {
-    const data = fs.readFileSync(rsvpFile);
-    rsvps = JSON.parse(data);
+   const fileContent = fs.readFileSync(rsvpFile, "utf8");
+   let rsvps;
+   if(fileContent.trim() === ''){
+    //file is empty, start with new array
+    rsvps = [];
+   }else{
+    //parse existing JSON content so that it does not get overwritten by new submission
+    try{
+      rsvps = JSON.parse(fileContent);
+      if(!Array.isArray(rsvps)){
+        //If JSON exists but isnt an array, wrap it in an array
+        rsvps = [rsvps];
+      }
+    }catch(err){
+        console.error('Error parsing JSON', err);
+        rsvps = [];
+      }
+   }
+   //add new rsvp submission to array
+   rsvps.push(newRsvp);
+   //write entire array back to the file
+   fs.writeFileSync(rsvpFile, JSON.stringify(rsvps, null, 2), 'utf8');
+   console.log('New input added to JSON file.');
   }
+  var newContent = fs.readFileSync(rsvpFile, "utf8");
+  console.log(newContent);
 
-  rsvps.push(newRSVP);
-  fs.writeFileSync(rsvpFile, JSON.stringify(rsvps, null, 2));
-
-  res.status(200).json({ message: 'RSVP saved successfully!' });
+  res.json({ message: "RSVP saved successfully!" });
 });
 
+
 // --- Song Suggestion Endpoint ---
-app.post('/api/songs', (req, res) => {
+app.post("/api/songs", (req, res) => {
   const { song, artist } = req.body;
 
   if (!song || !artist) {
-    return res.status(400).json({ message: 'Song and artist are required.' });
+    return res.status(400).json({ message: "Song and artist are required." });
   }
 
   const newSong = { song, artist };
-
-  const songsFile = path.join(__dirname, 'songs.json');
-  let songs = [];
-
+  
   if (fs.existsSync(songsFile)) {
-    const data = fs.readFileSync(songsFile);
-    songs = JSON.parse(data);
+   console.log('songs file exists');
+   const fileContent = fs.readFileSync(songsFile, "utf8");
+   let songs;
+   if(fileContent.trim() === ''){
+    //file is empty, start with new array
+    songs = [];
+   }else{
+    //parse existing JSON content so that it does not get overwritten by new submission
+    try{
+      songs = JSON.parse(fileContent);
+      if(!Array.isArray(songs)){
+        //If JSON exists but isnt an array, wrap it in an array
+        songs = [songs];
+      }
+    }catch(err){
+        console.error('Error parsing JSON', err);
+        songs = [];
+      }
+   }
+   //add new rsvp submission to array
+   songs.push(newSong);
+   //write entire array back to the file
+   fs.writeFileSync(songsFile, JSON.stringify(songs, null, 2), 'utf8');
+   console.log('New input added to JSON file.');
   }
+  var newContent = fs.readFileSync(songsFile, "utf8");
+  console.log(newContent);
 
-  songs.push(newSong);
-  fs.writeFileSync(songsFile, JSON.stringify(songs, null, 2));
-
-  res.status(200).json({ message: 'Song suggestion saved successfully!' });
+  res.json({ message: "Song suggestion saved successfully!" });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start local server
+app.listen(PORT, () => console.log(`Local server running on http://localhost:${PORT}`));
