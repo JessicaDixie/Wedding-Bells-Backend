@@ -27,37 +27,28 @@ app.post("/api/rsvp", (req, res) => {
 
   const newRsvp = { name, attending, plusOne };
 
+  let rsvps = [];
   if (fs.existsSync(rsvpFile)) {
-   const fileContent = fs.readFileSync(rsvpFile, "utf8");
-   let rsvps;
-   if(fileContent.trim() === ''){
-    //file is empty, start with new array
-    rsvps = [];
-   }else{
-    //parse existing JSON content so that it does not get overwritten by new submission
-    try{
-      rsvps = JSON.parse(fileContent);
-      if(!Array.isArray(rsvps)){
-        //If JSON exists but isnt an array, wrap it in an array
-        rsvps = [rsvps];
-      }
-    }catch(err){
-        console.error('Error parsing JSON', err);
+    const fileContent = fs.readFileSync(rsvpFile, "utf8");
+    if (fileContent.trim() !== "") {
+      try {
+        rsvps = JSON.parse(fileContent);
+        if (!Array.isArray(rsvps)) rsvps = [rsvps];
+      } catch (err) {
+        console.error("Error parsing JSON", err);
         rsvps = [];
       }
-   }
-   //add new rsvp submission to array
-   rsvps.push(newRsvp);
-   //write entire array back to the file
-   fs.writeFileSync(rsvpFile, JSON.stringify(rsvps, null, 2), 'utf8');
-   console.log('New input added to JSON file.');
+    }
   }
-  var newContent = fs.readFileSync(rsvpFile, "utf8");
-  console.log(newContent);
 
+  // Add the new entry
+  rsvps.push(newRsvp);
+  // Write back to file (creates it if missing)
+  fs.writeFileSync(rsvpFile, JSON.stringify(rsvps, null, 2), "utf8");
+
+  console.log("New RSVP added:", newRsvp);
   res.json({ message: "RSVP saved successfully!" });
 });
-
 
 // --- Song Suggestion Endpoint ---
 app.post("/api/songs", (req, res) => {
@@ -68,38 +59,30 @@ app.post("/api/songs", (req, res) => {
   }
 
   const newSong = { song, artist };
-  
+
+  let songs = [];
   if (fs.existsSync(songsFile)) {
-   console.log('songs file exists');
-   const fileContent = fs.readFileSync(songsFile, "utf8");
-   let songs;
-   if(fileContent.trim() === ''){
-    //file is empty, start with new array
-    songs = [];
-   }else{
-    //parse existing JSON content so that it does not get overwritten by new submission
-    try{
-      songs = JSON.parse(fileContent);
-      if(!Array.isArray(songs)){
-        //If JSON exists but isnt an array, wrap it in an array
-        songs = [songs];
-      }
-    }catch(err){
-        console.error('Error parsing JSON', err);
+    const fileContent = fs.readFileSync(songsFile, "utf8");
+    if (fileContent.trim() !== "") {
+      try {
+        songs = JSON.parse(fileContent);
+        if (!Array.isArray(songs)) songs = [songs];
+      } catch (err) {
+        console.error("Error parsing JSON", err);
         songs = [];
       }
-   }
-   //add new rsvp submission to array
-   songs.push(newSong);
-   //write entire array back to the file
-   fs.writeFileSync(songsFile, JSON.stringify(songs, null, 2), 'utf8');
-   console.log('New input added to JSON file.');
+    }
   }
-  var newContent = fs.readFileSync(songsFile, "utf8");
-  console.log(newContent);
 
+  // Add the new entry
+  songs.push(newSong);
+  // Write back to file (creates it if missing)
+  fs.writeFileSync(songsFile, JSON.stringify(songs, null, 2), "utf8");
+
+  console.log("New song added:", newSong);
   res.json({ message: "Song suggestion saved successfully!" });
 });
+
 
 // Start  server
 const PORT = process.env.PORT || 5000;
