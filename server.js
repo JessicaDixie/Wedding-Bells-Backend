@@ -10,6 +10,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+//Check that the server is running in the browser
+app.get('/', (req, res) => {
+  res.send('Wedding Bells Backend is running successfully!');
+});
+
 // --- RSVP Endpoint ---
 app.post('/api/rsvp', (req, res) => {
   const { name, attending, plusOne } = req.body;
