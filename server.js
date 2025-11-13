@@ -1,15 +1,17 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
-app.use(cors());
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 5000; 
 
 // Middleware
 app.use(cors()); // Allows frontend requests from localhost
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Render backend is working!");
+});
 
 // File paths
 const rsvpFile = 'rsvps.json';
@@ -101,4 +103,5 @@ app.post("/api/songs", (req, res) => {
 });
 
 // Start  server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
