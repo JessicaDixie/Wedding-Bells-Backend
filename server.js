@@ -10,7 +10,7 @@ mongoose.connect(MONGO_URI)
 
 const app = express();
 // Middleware
-app.use(cors()); // Allows frontend requests from localhost
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -37,7 +37,7 @@ const Song = mongoose.model("Song", songSchema);
 const rsvpFile = 'rsvps.json';
 const songsFile = 'songs.json';
 
-// --- RSVP Endpoint ---
+// RSVP Endpoint
 
 app.post("/api/rsvp", async (req, res) => {
   const { name, attending, plusOne } = req.body;
