@@ -72,7 +72,27 @@ app.post("/api/songs", async (req, res) => {
   }
 });
 
+//Get all RSVPs
+app.get("/api/rsvp", async (req, res) => {
+  try {
+    const rsvps = await Rsvp.find({});
+    res.json(rsvps);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch RSVPs" });
+  }
+});
 
+//Get all song suggestions
+app.get("/api/songs", async (req, res) => {
+  try {
+    const songs = await Song.find({});
+    res.json(songs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch songs" });
+  }
+});
 
 // Start  server
 const PORT = process.env.PORT || 5000;
