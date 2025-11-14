@@ -55,7 +55,7 @@ app.post("/api/rsvp", async (req, res) => {
   }
 });
 
-// --- Song Suggestion Endpoint ---
+// Song Suggestion Endpoint
 app.post("/api/songs", async (req, res) => {
   const { song, artist } = req.body;
   if (!song || !artist) {
@@ -72,7 +72,7 @@ app.post("/api/songs", async (req, res) => {
   }
 });
 
-//Get all RSVPs
+// Get all RSVPs
 app.get("/api/rsvp", async (req, res) => {
   try {
     const rsvps = await RSVP.find({});
@@ -83,7 +83,7 @@ app.get("/api/rsvp", async (req, res) => {
   }
 });
 
-//Get all song suggestions
+// Get all song suggestions
 app.get("/api/songs", async (req, res) => {
   try {
     const songs = await Song.find({});
@@ -94,6 +94,6 @@ app.get("/api/songs", async (req, res) => {
   }
 });
 
-// Start  server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
