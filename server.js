@@ -5,8 +5,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const MONGO_URI = process.env.MONGO_URI || "your-local-mongo-uri";
 mongoose.connect(MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 const app = express();
 // Middleware
@@ -75,7 +75,7 @@ app.post("/api/songs", async (req, res) => {
 //Get all RSVPs
 app.get("/api/rsvp", async (req, res) => {
   try {
-    const rsvps = await Rsvp.find({});
+    const rsvps = await RSVP.find({});
     res.json(rsvps);
   } catch (err) {
     console.error(err);
