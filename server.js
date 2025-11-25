@@ -119,6 +119,20 @@ app.get("/api/songs", async (req, res) => {
   }
 });
 
+// =====================================================================
+// LOGIN AUTHENTICATION
+// =====================================================================
+
+// POST: handles admin login authentication
+app.post("/api/admin-login", (req, res) => {
+  const { password } = req.body; // Extract the submitted password from the request body
+
+  // Compare the submitted password with the secure environment variable. If it matches, return a successresponse, if not then return a failure response
+  if (password === process.env.ADMIN_PASSWORD) {
+    return res.json({ success: true });
+  }
+   res.status(401).json({ success: false, message: "Incorrect Password" });
+});
 
 // =====================================================================
 // START SERVER
