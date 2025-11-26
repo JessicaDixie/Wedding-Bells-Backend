@@ -4,11 +4,12 @@ DLBCSPJWD01 Project
 🎉Inge & Mark’s Wedding Website — Backend
 
 This repository contains the backend for the wedding website of Inge and Mark.
-It provides the API endpoints used by the public frontend (hosted on GitHub Pages). The backend handles:
-- RSVP submissions
-- Song suggestions
-- Password-protected admin login
-- Retrieval of rsvp and songs data for the admin dashboard
+It provides:
+- Secure admin authentication
+- Protected admin page
+- RSVP submission endpoints
+- Song suggestion submission endpoints
+- MongoDB Atlas integration
     
 The backend is built using Node.js, Express.js, and MongoDB Atlas, and is deployed on Render 
 
@@ -22,11 +23,16 @@ Wedding-Bells-Backend/
     ├── LICENSE      
     ├── package-lock.json
     ├── package.json
+    ├── admin.html
+    ├── admin.css
+    ├── admin.js
     ├── rsvps.json      # Placeholder file required only for Render; not used for storage
     ├── songs.json      # Placeholder file required only for Render; not used for storage
     └── server.js       # Main Express server
     
-MongoDB Atlas is used for all persisten storage.
+MongoDB Atlas is used for all persistent storage.
+
+Note: The admin dashboard (admin.html, admin.css, admin.js) now lives entirely inside the backend, ensuring that admin access is fully controlled by server-side authentication.
 
 
 🛠️ Technologies 
@@ -48,8 +54,7 @@ Follow these steps to run the backend locally before deploying.
 2. Install dependencies
 
         npm install
-3. Create a .env file
-In the root folder:
+3. Create a .env file (optional for local testing) in the root folder:
 
         MONGO_URI=<your MongoDB connection string>
         ADMIN_PASSWORD=<your chosen admin password>
@@ -110,9 +115,14 @@ Where to set these in Render: Render Dashboard → Project → Environment → E
 
 
 🔐 Security Notes
-- The admin panel (admin.html) is accessed via the frontend (index.html) by entering the backend-protected password.
-- Password validation occurs server-side
+- The admin dashboard is served (the admin.html with the admin.css and admin.js) to the frontend, only after validating the secure cookie.
+- The cookie is:
+  * HTTP-Only (cannot be accessed by JavaScript)
+  * Secure (sent only over HTTPS)
+  * SameSite=None (supports cross-origin frontend to backend requests)
+    This prevents unauthorized users from accessing the admin page via direct URL or by bypassing the frontend login.
 - Sensitive information is never stored in the frontend
+  
 
    
         
