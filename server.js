@@ -5,6 +5,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
 const MONGO_URI = process.env.MONGO_URI || "your-local-mongo-uri"; // MongoDB connection string (from Render environment or fallback local URI)
@@ -14,7 +15,7 @@ mongoose.connect(MONGO_URI)
   .catch(err => console.error("MongoDB connection error:", err));
 
 const app = express();
-
+app.use(cookieParser());
 
 // =====================================================================
 // MIDDLEWARE
@@ -124,14 +125,12 @@ app.get("/api/songs", async (req, res) => {
 // =====================================================================
 
 function requireAuth(req, res, next) {
-  const authHeader = req.headers["x-admin-auth"];
-
-  if (authHeader === process.env.ADMIN_PASSWORD) {
+  if (req.cookies && req.cookies.adminAuth === process.env.ADMIN_PASSWORD) {
     return next();
   }
-
   return res.status(401).send("Unauthorized");
 }
+
 
 // =====================================================================
 // LOGIN AUTHENTICATION
@@ -139,10 +138,14 @@ function requireAuth(req, res, next) {
 
 // POST: handles admin login authentication
 app.post("/api/admin-login", (req, res) => {
-  const { password } = req.body; // Extract the submitted password from the request body
+  const { password } = req.body;
 
-  // Compare the submitted password with the secure environment variable. If it matches, return a successresponse, if not then return a failure response
   if (password === process.env.ADMIN_PASSWORD) {
+    res.cookie("adminAuth", process.env.ADMIN_PASSWORD, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
     return res.json({ success: true });
   }
   res.status(401).json({ success: false, message: "Incorrect Password" });
