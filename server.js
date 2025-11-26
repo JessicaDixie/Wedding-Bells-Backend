@@ -168,6 +168,13 @@ app.get("/admin", requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
+app.get("/admin.css", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.css"));
+});
+
+app.get("/admin.js", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.js"));
+});
 
 // =====================================================================
 // START SERVER
