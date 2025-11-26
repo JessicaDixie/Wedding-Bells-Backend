@@ -1,0 +1,30 @@
+body {
+  font-family: 'Georgia', serif;
+  padding: 20px;
+  background-color: #fffaf5;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+h2 {
+  margin-top: 40px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff2f2;
+  margin-bottom: 20px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f8e1e7;
+}

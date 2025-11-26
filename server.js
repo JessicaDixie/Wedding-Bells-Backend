@@ -120,6 +120,20 @@ app.get("/api/songs", async (req, res) => {
 });
 
 // =====================================================================
+// ADMIN AUTHENTICATION MIDDLEWARE
+// =====================================================================
+
+function requireAuth(req, res, next) {
+  const authHeader = req.headers["x-admin-auth"];
+
+  if (authHeader === process.env.ADMIN_PASSWORD) {
+    return next();
+  }
+
+  return res.status(401).send("Unauthorized");
+}
+
+// =====================================================================
 // LOGIN AUTHENTICATION
 // =====================================================================
 
@@ -131,13 +145,30 @@ app.post("/api/admin-login", (req, res) => {
   if (password === process.env.ADMIN_PASSWORD) {
     return res.json({ success: true });
   }
-   res.status(401).json({ success: false, message: "Incorrect Password" });
+  res.status(401).json({ success: false, message: "Incorrect Password" });
 });
+
+// =====================================================================
+// SHOW ADMIN-ONLY FILES
+// =====================================================================
+
+// Serve admin panel files ONLY after password verification
+app.get("/admin", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.html"));
+});
+
+app.get("/admin.css", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.css"));
+});
+
+app.get("/admin.js", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.js"));
+});
+
 
 // =====================================================================
 // START SERVER
 // =====================================================================
-
 
 const PORT = process.env.PORT || 5000; // pickup port from environment (Render) or default to 5000 locally
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
