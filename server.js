@@ -16,6 +16,7 @@ mongoose.connect(MONGO_URI)
 
 const app = express();
 
+// Allow cross-origin requests (needed for frontend to backend communication)
 app.use(cors({
   origin: "https://jessicadixie.github.io",
   credentials: true
@@ -26,7 +27,7 @@ app.use(cors({
 // =====================================================================
 // MIDDLEWARE
 // =====================================================================
-app.use(cors()); // Allow cross-origin requests (needed for frontend to backend communication)
+
 app.use(express.json()); // Parse incoming JSON request bodies
 app.use(cookieParser());
 
@@ -163,16 +164,9 @@ app.post("/api/admin-login", (req, res) => {
 // =====================================================================
 
 // Serve admin panel files ONLY after password verification
-app.get("/admin", (req, res) => {
-  if (req.cookies.admin === "true") {
-    return res.sendFile(path.join(__dirname, "admin.html"));
-  }
-
-  return res.status(401).send("Unauthorized");
+app.get("/admin", requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.html"));
 });
-
-
-
 
 
 // =====================================================================
