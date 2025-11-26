@@ -118,6 +118,8 @@ Frontend interactions (such as API calls or admin login) may be shortly delayed 
 
 
 🔐 Security Notes
+- Admin access for grading (optional)
+  * A temporary admin password can be provided privately upon request to the course instructor. For security reasons, the production admin password is not included in this repository.
 - The admin dashboard is served (the admin.html with the admin.css and admin.js) to the frontend, only after validating the secure cookie.
 - The cookie is:
   * HTTP-Only (cannot be accessed by JavaScript)
