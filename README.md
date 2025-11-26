@@ -113,6 +113,9 @@ Where to set these in Render: Render Dashboard → Project → Environment → E
 
            const API_BASE = "https://wedding-bells-backend.onrender.com";
 
+Note: Render free-tier services may take several seconds to start responding after periods of inactivity.
+Frontend interactions (such as API calls or admin login) may be shortly delayed while the service 'wakes up'.
+
 
 🔐 Security Notes
 - The admin dashboard is served (the admin.html with the admin.css and admin.js) to the frontend, only after validating the secure cookie.
