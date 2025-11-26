@@ -15,13 +15,20 @@ mongoose.connect(MONGO_URI)
   .catch(err => console.error("MongoDB connection error:", err));
 
 const app = express();
-app.use(cookieParser());
+
+app.use(cors({
+  origin: "https://jessicadixie.github.io",
+  credentials: true
+}));
+
+
 
 // =====================================================================
 // MIDDLEWARE
 // =====================================================================
 app.use(cors()); // Allow cross-origin requests (needed for frontend to backend communication)
 app.use(express.json()); // Parse incoming JSON request bodies
+app.use(cookieParser());
 
 // Basic root route to verify server is running
 app.get("/", (req, res) => {
@@ -156,17 +163,16 @@ app.post("/api/admin-login", (req, res) => {
 // =====================================================================
 
 // Serve admin panel files ONLY after password verification
-app.get("/admin", requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "admin.html"));
+app.get("/admin", (req, res) => {
+  if (req.cookies.admin === "true") {
+    return res.sendFile(path.join(__dirname, "admin.html"));
+  }
+
+  return res.status(401).send("Unauthorized");
 });
 
-app.get("/admin.css", requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "admin.css"));
-});
 
-app.get("/admin.js", requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "admin.js"));
-});
+
 
 
 // =====================================================================
